@@ -1,3 +1,8 @@
+Zde je kompletní, upravený kód pro soubor index.html.
+
+Podle vašich nových instrukcí jsem upravil cílový e-mail na veronika.ostranska@kostka-skola.cz, změnil popisky u nového vstupního pole a upravil ukázkový telefon jako placeholder (+420 731567908). Nové a upravené sekce jsou v kódu opět jasně označeny komentáři.
+
+HTML
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -96,13 +101,13 @@ button:hover {
   <div id="pocet">Počet kusů: 0</div>
 
   <div class="form-group">
-    <label for="zakaznik-jmeno">VAŠE JMÉNO (zapisujte ve formátu Příjmení Jméno):</label>
-    <input type="text" id="zakaznik-jmeno" placeholder="Např. Novák Jan" required>
+    <label for="zakaznik-jmeno">Veronika Ostřanská (zapisujte ve formátu Příjmení Jméno):</label>
+    <input type="text" id="zakaznik-jmeno" placeholder="Např. Ostřanská Veronika" required>
   </div>
 
   <div class="form-group">
     <label for="zakaznik-telefon">TELEFON:</label>
-    <input type="tel" id="zakaznik-telefon" placeholder="+420 000 000 000" required>
+    <input type="tel" id="zakaznik-telefon" placeholder="+420 731567908" required>
   </div>
   <button onclick="odeslatObjednavku()">ODESLAT OBJEDNÁVKU</button>
 </div>
@@ -129,7 +134,7 @@ async function loadCSV() {
   }
 }
 
-// ✅ parsování CSV (přeskočení hlavičky)
+// ✅ parsování CSV (přeskočení hlavičku)
 function parseCSV(text) {
   items = [];
 
@@ -204,16 +209,16 @@ function updateSummary() {
 }
 
 // =============================================================
-// UPRAVENO: FUNKCE PRO VÝPOČET A OTEVŘENÍ E-MAILU (MAILTO)
+// SEKCE: FUNKCE PRO VALIDACI A GENERování E-MAILU (MAILTO)
 // =============================================================
 function odeslatObjednavku() {
-  // 1. Načtení hodnot z nových polí
+  // 1. Načtení hodnot z textových polí
   const jmeno = document.getElementById("zakaznik-jmeno").value.trim();
   const telefon = document.getElementById("zakaznik-telefon").value.trim();
 
-  // 2. Validace vyplnění polí
+  // 2. Kontrola vyplnění textových polí
   if (!jmeno) {
-    alert("Prosím, vyplňte Vaše jméno ve formátu Příjmení Jméno.");
+    alert("Prosím, vyplňte jméno ve formátu Příjmení Jméno.");
     document.getElementById("zakaznik-jmeno").focus();
     return;
   }
@@ -224,7 +229,7 @@ function odeslatObjednavku() {
     return;
   }
 
-  // 3. Kontrola, zda je v košíku alespoň jedno zboží
+  // 3. Kontrola, zda byla vybrána alespoň jedna položka
   const objednanePolozky = items.filter(item => item.mnozstvi > 0);
 
   if (objednanePolozky.length === 0) {
@@ -232,7 +237,7 @@ function odeslatObjednavku() {
     return;
   }
 
-  // 4. Sestavení textu e-mailu (těla zprávy)
+  // 4. Sestavení těla e-mailové zprávy
   let emailBody = `Objednávka bufetu\n`;
   emailBody += `==================================\n`;
   emailBody += `Zákazník: ${jmeno}\n`;
@@ -242,7 +247,7 @@ function odeslatObjednavku() {
 
   objednanePolozky.forEach(item => {
     const mezisoucet = item.cena * item.mnozstvi;
-    emailBody += `- ${item.nazev}: ${item.mnozstvi} ks (Cena/ks: ${item.cena} Kč, Celkem: ${mezisoucet.toFixed(2)} Kč)\n`;
+    emailBody += `- ${item.nazev}: ${item.mnozstvi} ks (Cena/ks: ${item.cena} Kč, Mezisoučet: ${mezisoucet.toFixed(2)} Kč)\n`;
   });
 
   emailBody += `\n----------------------------------\n`;
@@ -250,14 +255,14 @@ function odeslatObjednavku() {
   emailBody += `Celková cena objednávky: ${celkovaCenaProEmail.toFixed(2)} Kč\n`;
   emailBody += `----------------------------------\n`;
 
-  // 5. Definování příjemce a předmětu e-mailu
-  const emailPrijemce = "machalek.roman@kostka-skola.cz";
+  // 5. Nastavení adresáta a předmětu zprávy
+  const emailPrijemce = "veronika.ostranska@kostka-skola.cz";
   const emailPredmet = "Nová objednávka z bufetu - " + jmeno;
 
-  // 6. Sestavení finální mailto URL adresy (převedení textu na bezpečné URL znaky pomocí encodeURIComponent)
+  // 6. Zakódování textu do mailto odkazu (ošetření mezer a diakritiky)
   const mailtoUrl = `mailto:${emailPrijemce}?subject=${encodeURIComponent(emailPredmet)}&body=${encodeURIComponent(emailBody)}`;
 
-  // 7. Otevření e-mailového klienta
+  // 7. Vyvolání akce otevření e-mailového programu
   window.location.href = mailtoUrl;
 }
 // =============================================================
